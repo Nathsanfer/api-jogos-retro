@@ -18,18 +18,24 @@ class AuthController {
     // Registrar um novo usuário
     async register(req, res) {
         try {
-            const { name, email, password } = req.body;
+            const { name, nickname, email, password } = req.body;
 
             //Validação básica 
-            if (!name || !email || !password) {
+            if (!name || !nickname || !email || !password) {
                 return res.status(400).json({ error: "Todos os campos são obrigatórios!" });
             }
 
-            // Verifica se o usuário já existe
-            const userExists = await UserModel.findByEmail(email);
-            if (userExists) {
+            // Verifica se o email já existe
+            const userEmailExists = await UserModel.findByEmail(email);
+            if (userEmailExists) {
                 return res.status(400).json({ error: "Email já cadastrado!" });
             }
+
+            // Verifica se o nickname já existe
+            // const userNicknameExists = await UserModel.findByEmail(nickname);
+            // if (userNicknameExists) {
+            //     return res.status(400).json({ error: "Nickname já cadastrado!" });
+            // }
 
             // Hash da senha (Criptografar a senha)
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -37,6 +43,7 @@ class AuthController {
             // Criar o objeto do meu usuário
             const data = {
                 name,
+                nickname,
                 email,
                 password: hashedPassword
             };
@@ -79,6 +86,7 @@ class AuthController {
                 {
                     id: userExists.id,
                     name: userExists.name,
+                    nickname: userExists.nickname,
                     email: userExists.email
                 },
                 process.env.JWT_SECRET,
@@ -89,7 +97,8 @@ class AuthController {
 
             return res.json({
                 message: "Login realizado com sucesso!",
-                token,userExists
+                token,
+                userExists
             })
         } catch (error) {
             console.error("Erro ao fazer login: ", error);
