@@ -32,10 +32,10 @@ class AuthController {
             }
 
             // Verifica se o nickname já existe
-            // const userNicknameExists = await UserModel.findByEmail(nickname);
-            // if (userNicknameExists) {
-            //     return res.status(400).json({ error: "Nickname já cadastrado!" });
-            // }
+            const userNicknameExists = await UserModel.findByEmail(nickname);
+            if (userNicknameExists) {
+                return res.status(400).json({ error: "Nickname já cadastrado!" });
+            }
 
             // Hash da senha (Criptografar a senha)
             const hashedPassword = await bcrypt.hash(password, 10);
